@@ -1,1 +1,0 @@
-# EcoAlert---Community-Environmental-Reporting-Application
