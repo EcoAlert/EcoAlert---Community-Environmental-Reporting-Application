@@ -1,4 +1,5 @@
-import 'package:ecoalert/auth_gate.dart';
+import 'package:ecoalert/admin_screen.dart';
+// import 'package:ecoalert/auth_gate.dart';
 import 'package:ecoalert/login.dart';
 import 'package:ecoalert/register.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData.light(),
       debugShowCheckedModeBanner: false,
-      home: AuthGate(),
+      home: Admin(),
       routes: {
     '/login': (context) => const Login(),
     '/register': (context) => const Register(), // 👈 make sure this exists
