@@ -93,13 +93,13 @@ class LoginState extends State<Login> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const FaIcon(
-                              FontAwesomeIcons.leaf,
+                              FontAwesomeIcons.wrench,
                               color: Color.fromARGB(255, 1, 143, 82),
                             ),
                           ),
                           const SizedBox(height: 15),
                           Text(
-                            "EcoAlert",
+                            "FixAlert",
                             style: GoogleFonts.poppins(
                               textStyle: const TextStyle(
                                 fontSize: 20,

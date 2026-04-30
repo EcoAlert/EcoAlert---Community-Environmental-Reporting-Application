@@ -153,7 +153,7 @@ class _RegisterState extends State<Register> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const FaIcon(
-                              FontAwesomeIcons.leaf,
+                              FontAwesomeIcons.screwdriverWrench,
                               color: Color.fromARGB(255, 1, 143, 82),
                             ),
                           ),
@@ -170,7 +170,7 @@ class _RegisterState extends State<Register> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            "Join EcoAlert and start making a difference",
+                            "Join FixAlert and start making a difference",
                             style: GoogleFonts.ptSans(
                               textStyle: const TextStyle(
                                 fontSize: 12,
