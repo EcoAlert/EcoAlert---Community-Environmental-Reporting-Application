@@ -162,7 +162,7 @@ class AdminState extends State<Admin> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const FaIcon(
-                        FontAwesomeIcons.wrench,
+                        FontAwesomeIcons.screwdriverWrench,
                         color: Color.fromARGB(255, 1, 143, 82),
                         size: 17,
                       ),

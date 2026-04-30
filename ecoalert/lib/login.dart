@@ -93,7 +93,7 @@ class LoginState extends State<Login> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const FaIcon(
-                              FontAwesomeIcons.wrench,
+                              FontAwesomeIcons.screwdriverWrench,
                               color: Color.fromARGB(255, 1, 143, 82),
                             ),
                           ),
@@ -110,7 +110,7 @@ class LoginState extends State<Login> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            "Monitor and report environmental issues",
+                            "Monitor and report different Kind issues",
                             style: GoogleFonts.ptSans(
                               textStyle: const TextStyle(
                                 fontSize: 12,
