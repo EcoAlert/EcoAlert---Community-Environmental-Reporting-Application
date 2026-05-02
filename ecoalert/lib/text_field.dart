@@ -33,10 +33,10 @@ class InputField extends StatelessWidget {
         validator: validator,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(
-            vertical: 0,// 👈 this centers text vertically
+            vertical: 0,// this centers text vertically
           ),
           prefixIconConstraints: const BoxConstraints(
-            minWidth: 14, // 👈 control icon width
+            minWidth: 14, // control icon width
             minHeight: 0,
           ),
           filled: true,
@@ -44,7 +44,7 @@ class InputField extends StatelessWidget {
           // background color
           hintText: hint,
           hintStyle: TextStyle(
-            color: Color(0xFF9E9E9E), // explicit grey hex
+            color: Color(0xFF9E9E9E),
             fontSize: 10,
           ),
           prefixIcon: Padding(
@@ -52,7 +52,7 @@ class InputField extends StatelessWidget {
             child: Icon(icon, size: 14),
           ),
           errorStyle: TextStyle(
-            color: Colors.black, // 👈 validation error color
+            color: Colors.black, // validation error color
             fontSize: 10,
           ),
           suffixIcon: isPassword

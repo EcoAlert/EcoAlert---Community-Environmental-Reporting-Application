@@ -1,6 +1,6 @@
 {
-    "name": "ecoalert",
-    "short_name": "ecoalert",
+    "name": "fixalert",
+    "short_name": "fixalert",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

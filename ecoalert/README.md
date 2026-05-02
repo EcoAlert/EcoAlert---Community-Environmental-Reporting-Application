@@ -1,4 +1,4 @@
-# ecoalert
+# fixalert
 
 A new Flutter project.
 

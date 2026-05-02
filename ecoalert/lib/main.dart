@@ -1,7 +1,7 @@
-import 'package:ecoalert/admin_screen.dart';
-// import 'package:ecoalert/auth_gate.dart';
-import 'package:ecoalert/login.dart';
-import 'package:ecoalert/register.dart';
+import 'package:fixalert/admin_screen.dart';
+// import 'package:fixalert/auth_gate.dart';
+import 'package:fixalert/login.dart';
+import 'package:fixalert/register.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

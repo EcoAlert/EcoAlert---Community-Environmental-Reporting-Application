@@ -1,5 +1,5 @@
-import 'package:ecoalert/auth_service.dart';
-import 'package:ecoalert/text_field.dart';
+import 'package:fixalert/auth_service.dart';
+import 'package:fixalert/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';

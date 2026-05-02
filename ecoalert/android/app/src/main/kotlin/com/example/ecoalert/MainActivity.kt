@@ -1,4 +1,4 @@
-package com.example.ecoalert
+package com.example.fixalert
 
 import io.flutter.embedding.android.FlutterActivity
 
