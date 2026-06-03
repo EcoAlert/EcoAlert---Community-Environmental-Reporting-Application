@@ -1,6 +1,8 @@
+import 'package:fixalert/citizen/citizen_home.dart';
 import 'package:fixalert/login.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fixalert/admin_screen.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -48,11 +50,11 @@ class AuthGate extends StatelessWidget {
               final role = roleSnapshot.data?['role'];
 
               if (role == 'admin') {
-                // return const AdminScreen();
+                return const Admin();
               } else if (role == 'volunteer') {
                 // return const VolunteerScreen();
               } else if (role == 'citizen') {
-                // return const CitizenScreen();
+                return const CitizenHome();
               }
               return const Login(); // fallback
               
