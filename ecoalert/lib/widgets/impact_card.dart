@@ -40,10 +40,7 @@ class ImpactCard extends StatelessWidget {
 
             const SizedBox(height: 4),
 
-            Text(
-              title,
-              style: const TextStyle(fontSize: 13),
-            )
+            Text(title, style: const TextStyle(fontSize: 13)),
           ],
         ),
       ),

@@ -22,12 +22,7 @@ class _CitizenHomeState extends State<CitizenHome> {
 
   @override
   Widget build(BuildContext context) {
-
-    final pages = [
-  _homePage(),
-  const ProfilePage(),
-  const MyReportsPage(),
-];
+    final pages = [_homePage(), const ProfilePage(), const MyReportsPage()];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
@@ -56,9 +51,9 @@ class _CitizenHomeState extends State<CitizenHome> {
           ),
 
           BottomNavigationBarItem(
-  icon: Icon(Icons.receipt_long_outlined),
-  label: "My Reports",
-),
+            icon: Icon(Icons.receipt_long_outlined),
+            label: "My Reports",
+          ),
         ],
       ),
     );
@@ -73,10 +68,8 @@ class _CitizenHomeState extends State<CitizenHome> {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
               Row(
                 children: [
-
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -84,9 +77,9 @@ class _CitizenHomeState extends State<CitizenHome> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const FaIcon(
-  FontAwesomeIcons.screwdriverWrench,
-  color: Color(0xFF018F52),
-),
+                      FontAwesomeIcons.screwdriverWrench,
+                      color: Color(0xFF018F52),
+                    ),
                   ),
 
                   const SizedBox(width: 12),
@@ -94,7 +87,6 @@ class _CitizenHomeState extends State<CitizenHome> {
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       Text(
                         "FixAlert",
                         style: TextStyle(
@@ -105,13 +97,10 @@ class _CitizenHomeState extends State<CitizenHome> {
 
                       Text(
                         "Community Issue Reporting",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
 
@@ -119,10 +108,7 @@ class _CitizenHomeState extends State<CitizenHome> {
 
               const Text(
                 "Quick Actions",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
 
               const SizedBox(height: 14),
@@ -133,133 +119,105 @@ class _CitizenHomeState extends State<CitizenHome> {
                 subtitle: "Take photo and submit a report",
                 onTap: () async {
                   final result = await Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => const ReportIssuePage(),
-  ),
-);
+                    context,
+                    MaterialPageRoute(builder: (_) => const ReportIssuePage()),
+                  );
 
-if (result == true) {
-  setState(() {});
-}
+                  if (result == true) {
+                    setState(() {});
+                  }
                 },
               ),
               const SizedBox(height: 28),
 
-const Text(
-  "Your Impact",
-  style: TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 18,
-  ),
-),
+              const Text(
+                "Your Impact",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
 
-const SizedBox(height: 14),
+              const SizedBox(height: 14),
 
               FutureBuilder(
-  future: supabase
-      .from('reports')
-      .select()
-      .eq(
-        'user_id',
-        supabase.auth.currentUser!.id,
-      ),
+                future: supabase
+                    .from('reports')
+                    .select()
+                    .eq('user_id', supabase.auth.currentUser!.id),
 
-  builder: (context, snapshot) {
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator();
+                  }
 
-    if (!snapshot.hasData) {
-      return const CircularProgressIndicator();
-    }
+                  final reports = snapshot.data as List;
 
-    final reports = snapshot.data as List;
+                  final totalReports = reports.length;
 
-    final totalReports = reports.length;
+                  final verifiedCount = reports
+                      .where((r) => r['status'] == 'verified')
+                      .length;
 
-    final verifiedCount = reports
-        .where(
-          (r) =>
-              r['status'] == 'verified',
-        )
-        .length;
+                  return Row(
+                    children: [
+                      ImpactCard(
+                        icon: Icons.description_outlined,
+                        title: "Reports",
+                        value: totalReports.toString(),
+                        color: Colors.blue,
+                      ),
 
-    return Row(
-      children: [
+                      const SizedBox(width: 14),
 
-        ImpactCard(
-          icon: Icons.description_outlined,
-          title: "Reports",
-          value: totalReports.toString(),
-          color: Colors.blue,
-        ),
-
-        const SizedBox(width: 14),
-
-        ImpactCard(
-          icon: Icons.verified_outlined,
-          title: "Verified",
-          value: verifiedCount.toString(),
-          color: Colors.green,
-        ),
-      ],
-    );
-  },
-),
+                      ImpactCard(
+                        icon: Icons.verified_outlined,
+                        title: "Verified",
+                        value: verifiedCount.toString(),
+                        color: Colors.green,
+                      ),
+                    ],
+                  );
+                },
+              ),
 
               const SizedBox(height: 28),
 
               const Text(
-  "Recent Reports",
-  style: TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 18,
-  ),
-),
+                "Recent Reports",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
 
-const SizedBox(height: 14),
+              const SizedBox(height: 14),
 
-FutureBuilder(
-  future: supabase
-    .from('reports')
-    .select()
-    .eq(
-      'user_id',
-      supabase.auth.currentUser!.id,
-    )
-    .order('created_at', ascending: false)
-    .limit(5),
+              FutureBuilder(
+                future: supabase
+                    .from('reports')
+                    .select()
+                    .eq('user_id', supabase.auth.currentUser!.id)
+                    .order('created_at', ascending: false)
+                    .limit(5),
 
-  builder: (context, snapshot) {
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-    if (!snapshot.hasData) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+                  final reports = snapshot.data as List;
 
-    final reports = snapshot.data as List;
+                  if (reports.isEmpty) {
+                    return const Text("No reports submitted yet.");
+                  }
 
-    if (reports.isEmpty) {
-      return const Text(
-        "No reports submitted yet.",
-      );
-    }
-
-    return Column(
-      children: reports.map((report) {
-
-        return ReportCard(
-          title: report['category'] ?? "Issue",
-          location: report['location'] ?? "Unknown",
-          status: report['status'] ?? "Pending",
-          date: report['created_at']
-              .toString()
-              .substring(0,10),
-        );
-
-      }).toList(),
-    );
-  },
-),
+                  return Column(
+                    children: reports.map((report) {
+                      return ReportCard(
+                        title: report['category'] ?? "Issue",
+                        location: report['location'] ?? "Unknown",
+                        status: report['status'] ?? "Pending",
+                        date: report['created_at'].toString().substring(0, 10),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
 
               const SizedBox(height: 28),
 
@@ -272,7 +230,6 @@ FutureBuilder(
 
                 child: const Row(
                   children: [
-
                     Icon(
                       Icons.tips_and_updates_rounded,
                       color: Color(0xFF018F52),
@@ -284,14 +241,12 @@ FutureBuilder(
                     Expanded(
                       child: Text(
                         "FixAlert Tip:\nEvery report you submit helps volunteers take action!",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
-                    )
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

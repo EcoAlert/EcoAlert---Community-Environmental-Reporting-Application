@@ -13,58 +13,44 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final supabase = Supabase.instance.client;
 
-Future<void> uploadAvatar() async {
+  Future<void> uploadAvatar() async {
+    try {
+      final picker = ImagePicker();
 
-  try {
+      final image = await picker.pickImage(source: ImageSource.gallery);
 
-    final picker = ImagePicker();
+      if (image == null) return;
 
-    final image = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+      final fileName = "avatar_${supabase.auth.currentUser!.id}.png";
 
-    if (image == null) return;
+      await supabase.storage
+          .from('avatars')
+          .uploadBinary(
+            fileName,
+            await image.readAsBytes(),
+            fileOptions: const FileOptions(upsert: true),
+          );
 
-    final fileName =
-        "avatar_${supabase.auth.currentUser!.id}.png";
+      final imageUrl =
+          '${supabase.storage.from('avatars').getPublicUrl(fileName)}?t=${DateTime.now().millisecondsSinceEpoch}';
 
-    await supabase.storage
-        .from('avatars')
-        .uploadBinary(
-          fileName,
-          await image.readAsBytes(),
-          fileOptions: const FileOptions(
-            upsert: true,
-          ),
-        );
+      await supabase
+          .from('users')
+          .update({'avatar_url': imageUrl})
+          .eq('id', supabase.auth.currentUser!.id);
 
-    final imageUrl = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
+      setState(() {});
+    } catch (e) {
+      print("ERROR: $e");
 
-    await supabase
-        .from('users')
-        .update({
-          'avatar_url': imageUrl,
-        })
-        .eq(
-          'id',
-          supabase.auth.currentUser!.id,
-        );
+      if (!mounted) return;
 
-    setState(() {});
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
 
-  } catch (e) {
-
-  if (!mounted) return;
-
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(e.toString()),
-    ),
-  );
-}
-}
   @override
   Widget build(BuildContext context) {
     final supabase = Supabase.instance.client;
@@ -72,170 +58,143 @@ Future<void> uploadAvatar() async {
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: FutureBuilder(
-  future: supabase
-      .from('users')
-      .select()
-      .eq(
-        'id',
-        supabase.auth.currentUser!.id,
-      )
-      .single(),
+          future: supabase
+              .from('users')
+              .select()
+              .eq('id', supabase.auth.currentUser!.id)
+              .single(),
 
-  builder: (context, snapshot) {
-    
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(child: Text(snapshot.error.toString()));
+            }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-    if (snapshot.hasError) {
-  return Center(
-    child: Text(
-      snapshot.error.toString(),
-    ),
-  );
-}
-    if (!snapshot.hasData) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+            final user = snapshot.data as Map<String, dynamic>;
 
-    final user =
-    snapshot.data as Map<String, dynamic>;
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
 
-    return SingleChildScrollView(
-  child: Column(
-      children: [
+                  Material(
+                    color: Colors.transparent,
+                    shape: const CircleBorder(),
 
-        const SizedBox(height: 20),
+                    child: InkWell(
+                      onTap: uploadAvatar,
+                      customBorder: const CircleBorder(),
 
-        Material(
-  color: Colors.transparent,
-  shape: const CircleBorder(),
+                      splashColor: const Color(0xFF7ECBA9),
+                      highlightColor: Colors.transparent,
 
-  child: InkWell(
-    onTap: uploadAvatar,
-    customBorder: const CircleBorder(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
 
-    splashColor: const Color(0xFF7ECBA9),
-    highlightColor: Colors.transparent,
+                        child: CircleAvatar(
+                          radius: 50,
 
-    child: Padding(
-      padding: const EdgeInsets.all(4),
+                          backgroundImage: user['avatar_url'] != null
+                              ? NetworkImage(user['avatar_url'])
+                              : null,
 
-      child: CircleAvatar(
-        radius: 50,
+                          backgroundColor: const Color(0xFFB8E6D5),
 
-        backgroundImage:
-            user['avatar_url'] != null
-                ? NetworkImage(
-                    user['avatar_url'],
-                  )
-                : null,
+                          child: user['avatar_url'] == null
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 45,
+                                  color: Color(0xFF018F52),
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
 
-        backgroundColor:
-            const Color(0xFFB8E6D5),
+                  const Text(
+                    "Tap photo to change",
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
 
-        child: user['avatar_url'] == null
-            ? const Icon(
-                Icons.person,
-                size: 45,
-                color: Color(0xFF018F52),
-              )
-            : null,
-      ),
-    ),
-  ),
-),
-const SizedBox(height: 8),
+                  const SizedBox(height: 16),
 
-const Text(
-  "Tap photo to change",
-  style: TextStyle(
-    color: Colors.grey,
-    fontSize: 12,
-  ),
-),
+                  Text(
+                    user['full_name'] ?? '',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
 
-        const SizedBox(height: 16),
+                  const SizedBox(height: 6),
 
-        Text(
-          user['full_name'] ?? '',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
+                  Text(
+                    user['role'] ?? '',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
 
-        const SizedBox(height: 6),
+                  const SizedBox(height: 30),
 
-        Text(
-          user['role'] ?? '',
-          style: const TextStyle(
-            color: Colors.grey,
-          ),
-        ),
+                  _profileTile(
+                    icon: Icons.badge_outlined,
+                    title: "Member ID",
+                    subtitle: user['member_id'] ?? '',
+                  ),
 
-        const SizedBox(height: 30),
+                  const SizedBox(height: 14),
 
-        _profileTile(
-          icon: Icons.badge_outlined,
-          title: "Member ID",
-          subtitle: user['member_id'] ?? '',
-        ),
+                  _profileTile(
+                    icon: Icons.email_outlined,
+                    title: "Email",
+                    subtitle: user['email'] ?? '',
+                  ),
 
-        const SizedBox(height: 14),
+                  const SizedBox(height: 14),
 
-        _profileTile(
-          icon: Icons.email_outlined,
-          title: "Email",
-          subtitle: user['email'] ?? '',
-        ),
+                  _profileTile(
+                    icon: Icons.person_outline,
+                    title: "Role",
+                    subtitle: user['role'] ?? '',
+                  ),
 
-        const SizedBox(height: 14),
+                  const SizedBox(height: 30),
 
-        _profileTile(
-          icon: Icons.person_outline,
-          title: "Role",
-          subtitle: user['role'] ?? '',
-        ),
+                  SizedBox(
+                    width: double.infinity,
 
-        const SizedBox(height: 30),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF018F52),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
 
-        SizedBox(
-          width: double.infinity,
+                      onPressed: () async {
+                        await AuthService.logout();
 
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF018F52),
-              padding: const EdgeInsets.symmetric(
-                vertical: 14,
+                        if (!context.mounted) return;
+
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/login',
+                          (route) => false,
+                        );
+                      },
+
+                      child: const Text(
+                        "Logout",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-
-            onPressed: () async {
-
-              await AuthService.logout();
-
-              if (!context.mounted) return;
-
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/login',
-                (route) => false,
-              );
-            },
-
-            child: const Text(
-              "Logout",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
-        )
-      ],
-    ),
-  );
-},
-)
+            );
+          },
+        ),
       ),
     );
   }
@@ -253,16 +212,12 @@ const Text(
         borderRadius: BorderRadius.circular(18),
 
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          )
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
         ],
       ),
 
       child: Row(
         children: [
-
           Icon(icon, color: const Color(0xFF018F52)),
 
           const SizedBox(width: 14),
@@ -270,25 +225,19 @@ const Text(
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
 
               const SizedBox(height: 4),
 
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
