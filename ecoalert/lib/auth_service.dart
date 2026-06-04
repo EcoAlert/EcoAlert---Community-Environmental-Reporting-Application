@@ -69,7 +69,7 @@ class AuthService {
         };
       }
 
-      // 👈 add this — wait for session to be ready
+      // wait for session to be ready
       await Future.delayed(const Duration(seconds: 1));
 
       // Step 6: Insert into users table
@@ -104,7 +104,6 @@ class AuthService {
     required String password,
   }) async {
     try {
-      // Step 1: Sign in with Supabase Auth
       final authResponse = await _client.auth.signInWithPassword(
         email: email,
         password: password,
@@ -114,7 +113,6 @@ class AuthService {
         return {'success': false, 'message': 'Invalid email or password.'};
       }
 
-      // Step 2: Fetch role from users table
       final userDetails = await _client
           .from('users')
           .select()
@@ -133,11 +131,15 @@ class AuthService {
         'role': userDetails['role'],
         'message': 'Login successful!',
       };
-    } catch (e) {
-      return {'success': false, 'message': 'Something went wrong: $e'};
+    } on AuthException catch (_) {
+      return {'success': false, 'message': 'Invalid email or password.'};
+    } catch (_) {
+      return {
+        'success': false,
+        'message': 'Something went wrong. Please try again.',
+      };
     }
   }
-
   // ─── LOGOUT ────────────────────────────────────────────
   static Future<void> logout() async {
     await _client.auth.signOut();

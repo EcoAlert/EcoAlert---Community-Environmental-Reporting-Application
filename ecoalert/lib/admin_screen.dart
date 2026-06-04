@@ -63,14 +63,14 @@ class AdminState extends State<Admin> {
       if (mounted) setState(() => isLoadingStats = false);
     }
   }
-
+  // ─── FETCH ISSUES ────────────────────────────────────
   Future<void> _fetchIssues() async {
     setState(() => isLoadingIssues = true);
-
     try {
       final response = await Supabase.instance.client
           .from('reports')
           .select('*, users(full_name, member_id)')
+          .neq('status', 'rejected') // exclude rejected
           .order('created_at', ascending: false);
 
       if (!mounted) return;
@@ -85,7 +85,7 @@ class AdminState extends State<Admin> {
       if (mounted) setState(() => isLoadingIssues = false);
     }
   }
-
+  // ─── FILTER ISSUES ────────────────────────────────────
   void _filterIssues(String tab) {
     setState(() {
       selectedTab = tab;
@@ -138,6 +138,14 @@ class AdminState extends State<Admin> {
   void _applyFilter() {
     if (selectedTab == 'All Issues') {
       filteredIssues = allIssues;
+    } else if (selectedTab == 'Waiting') {
+      filteredIssues = allIssues
+          .where((i) => i['status'] == 'waiting')
+          .toList();
+    } else if (selectedTab == 'Approved') {
+      filteredIssues = allIssues
+          .where((i) => i['status'] == 'approved')
+          .toList();
     } else if (selectedTab == 'Pending') {
       filteredIssues = allIssues
           .where((i) => i['status'] == 'pending')
@@ -394,6 +402,66 @@ class AdminState extends State<Admin> {
     }
   }
 
+  // ─── APPROVE ISSUE ─────────────────────────────────────
+  Future<void> _approveIssue(String reportId) async {
+    try {
+      await Supabase.instance.client
+          .from('reports')
+          .update({'status': 'approved'})
+          .eq('id', reportId);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Issue approved successfully!'),
+          backgroundColor: Color(0xFF7ECBA9),
+        ),
+      );
+
+      _fetchIssues();
+      _fetchStats();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to approve: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
+  // ─── REJECT ISSUE ─────────────────────────────────────
+  Future<void> _rejectIssue(String reportId) async {
+    try {
+      await Supabase.instance.client
+          .from('reports')
+          .update({'status': 'rejected'}) // 👈 store as rejected
+          .eq('id', reportId);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Issue rejected.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      _fetchIssues();
+      _fetchStats();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to reject: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -411,7 +479,6 @@ class AdminState extends State<Admin> {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(25)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withAlpha(50),
@@ -782,7 +849,9 @@ class AdminState extends State<Admin> {
 
   // ─── ISSUE CARD ────────────────────────────────────────
   Widget _issueCard(Map<String, dynamic> issue) {
-    final String status = issue['status'] ?? 'pending';
+    final String status = issue['status'] ?? 'waiting';
+    final bool isWaiting = status == 'waiting';
+    final bool isApproved = status == 'approved';
     final bool isPending = status == 'pending';
     final bool isInProgress = status == 'in_progress';
     final bool isResolved = status == 'resolved';
@@ -792,12 +861,19 @@ class AdminState extends State<Admin> {
         issue['created_at']?.toString().substring(0, 16).replaceAll('T', ' ') ??
         '';
 
-    // Status color and label
     Color statusColor;
     Color statusBgColor;
     String statusLabel;
 
-    if (isPending) {
+    if (isWaiting) {
+      statusColor = Colors.grey;
+      statusBgColor = Colors.grey.shade100;
+      statusLabel = 'Waiting';
+    } else if (isApproved) {
+      statusColor = Colors.teal;
+      statusBgColor = Colors.teal.shade50;
+      statusLabel = 'Approved';
+    } else if (isPending) {
       statusColor = Colors.orange;
       statusBgColor = Colors.orange.shade50;
       statusLabel = 'Pending';
@@ -836,14 +912,10 @@ class AdminState extends State<Admin> {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: statusBgColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.error_outline,
-                  color: Colors.blue,
-                  size: 16,
-                ),
+                child: Icon(Icons.error_outline, color: statusColor, size: 16),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -862,7 +934,6 @@ class AdminState extends State<Admin> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Status badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -883,7 +954,6 @@ class AdminState extends State<Admin> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  // Category badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -905,7 +975,6 @@ class AdminState extends State<Admin> {
           ),
           const SizedBox(height: 8),
 
-          // Description
           Text(
             issue['description'] ?? '',
             style: const TextStyle(fontSize: 12, color: Colors.black),
@@ -914,7 +983,6 @@ class AdminState extends State<Admin> {
           ),
           const SizedBox(height: 10),
 
-          // Location
           Row(
             children: [
               const Icon(
@@ -931,7 +999,6 @@ class AdminState extends State<Admin> {
           ),
           const SizedBox(height: 4),
 
-          // Reported by
           Row(
             children: [
               const Icon(Icons.person_outline, size: 13, color: Colors.grey),
@@ -944,7 +1011,6 @@ class AdminState extends State<Admin> {
           ),
           const SizedBox(height: 4),
 
-          // Date
           Row(
             children: [
               const Icon(
@@ -961,10 +1027,56 @@ class AdminState extends State<Admin> {
           ),
           const SizedBox(height: 12),
 
-          // ─── Buttons based on status ──────────────
+          // ─── Waiting — Approve + Reject ───────────
+          if (isWaiting)
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _approveIssue(issue['id']),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF7ECBA9),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Approve',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _rejectIssue(issue['id']),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      side: const BorderSide(color: Colors.red),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Reject',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
-          // Pending — Assign Volunteer only
-          if (isPending)
+          // ─── Approved — Assign Volunteer ──────────
+          if (isApproved)
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
@@ -987,7 +1099,35 @@ class AdminState extends State<Admin> {
               ),
             ),
 
-          // In Progress — waiting info
+          // ─── Pending — waiting for volunteer ──────
+          if (isPending)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange.shade100),
+              ),
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.hourglass_empty_outlined,
+                    color: Colors.orange,
+                    size: 14,
+                  ),
+                  SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Waiting for volunteer to accept the task.',
+                      style: TextStyle(fontSize: 11, color: Colors.orange),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // ─── In Progress — volunteer working ──────
           if (isInProgress)
             Container(
               width: double.infinity,
@@ -1014,8 +1154,8 @@ class AdminState extends State<Admin> {
                 ],
               ),
             ),
-            
-          // Resolved — completed info
+
+          // ─── Resolved ─────────────────────────────
           if (isResolved)
             Container(
               width: double.infinity,

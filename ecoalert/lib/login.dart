@@ -1,4 +1,5 @@
 import 'package:fixalert/auth_service.dart';
+import 'package:fixalert/forget_password_screen.dart';
 import 'package:fixalert/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,14 +13,14 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> {
-  final _formKey = GlobalKey<FormState>(); // 👈 added
+  final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
   bool showPassword = false;
-  String errorMessage = ''; // 👈 added
+  String errorMessage = ''; 
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
 
-  // 👈 login function added
+  // login function
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -81,7 +82,7 @@ class LoginState extends State<Login> {
                         ),
                       ],
                     ),
-                    child: Form( // 👈 wrapped with Form
+                    child: Form( // wrapped with Form
                       key: _formKey,
                       child: Column(
                         children: [
@@ -194,13 +195,18 @@ class LoginState extends State<Login> {
                           ),
                           const SizedBox(height: 8),
 
-                          // Forgot Password 👈 updated onPressed
+                          // Forgot Password updated onPressed
                           TextButton(
                             style: TextButton.styleFrom(
                               overlayColor: Colors.transparent,
                             ),
                             onPressed: () {
-                              Navigator.pushNamed(context, '/forgot-password');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ForgotPasswordScreen(),
+                                ),
+                              );
                             },
                             child: SizedBox(
                               width: MediaQuery.of(context).size.width * 0.72,
@@ -217,7 +223,7 @@ class LoginState extends State<Login> {
                           ),
                           const SizedBox(height: 8),
 
-                          // 👈 error message added
+                          // error message
                           if (errorMessage.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8),
@@ -231,7 +237,7 @@ class LoginState extends State<Login> {
                               ),
                             ),
 
-                          // Sign In Button 👈 updated
+                          // Sign In Button
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.72,
                             child: ElevatedButton(
@@ -267,7 +273,7 @@ class LoginState extends State<Login> {
                           ),
                           const SizedBox(height: 15),
 
-                          // Navigate to Register 👈 updated onPressed
+                          // Navigate to Register updated onPressed
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

@@ -2,11 +2,12 @@ import 'package:fixalert/admin_screen.dart';
 import 'package:fixalert/auth_gate.dart';
 import 'package:fixalert/login.dart';
 import 'package:fixalert/register.dart';
+import 'package:fixalert/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fixalert/citizen/citizen_home.dart';
 
-
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +20,27 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ Auth listener goes here
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.passwordRecovery) {
+        navigatorKey.currentState?.pushNamed('/reset-password');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +54,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const Register(),
         '/admin': (context) => const Admin(),
         '/citizen': (context) => const CitizenHome(),
+        '/reset-password': (context) => const ResetPasswordScreen(),
       },
     );
   }

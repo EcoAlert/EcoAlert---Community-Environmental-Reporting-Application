@@ -96,7 +96,7 @@ class _RegisterState extends State<Register> {
           backgroundColor: Color(0xFF7ECBA9),
         ),
       );
-      Navigator.pushReplacementNamed(context, '/login'); // 👈 go to login
+      Navigator.pushReplacementNamed(context, '/login'); // go to login
     } else {
       setState(() => errorMessage = result['message']);
     }
@@ -351,7 +351,7 @@ class _RegisterState extends State<Register> {
                               _buildLabel('Role'),
                               SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.72,
-                                height: 30, // 👈 match height
+                                height: 30,
                                 child: Row(
                                   children: [
                                     _buildRoleCard(

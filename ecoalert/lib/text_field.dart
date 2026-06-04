@@ -22,62 +22,81 @@ class InputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 30,
       width: MediaQuery.of(context).size.width * 0.72,
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         obscureText: isPassword ? !(isVisible ?? false) : false,
-        style: const TextStyle(color: Colors.black ,fontSize: 10, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+        ),
         cursorColor: cursorColor,
         validator: validator,
         decoration: InputDecoration(
+          isDense: true,
           contentPadding: const EdgeInsets.symmetric(
-            vertical: 0,// this centers text vertically
+            vertical: 10,
+            horizontal:
+                8, // all fields have same internal spacing
           ),
           prefixIconConstraints: const BoxConstraints(
-            minWidth: 14, // control icon width
+            minWidth: 14,
             minHeight: 0,
+          ),
+          // limits the suffix icon size so password field stays same height as email
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: 30,
+            minHeight: 0,
+            maxHeight:
+                30, // clamps the eye icon height to match other fields
           ),
           filled: true,
           fillColor: Colors.white,
-          // background color
           hintText: hint,
-          hintStyle: TextStyle(
-            color: Color(0xFF9E9E9E),
-            fontSize: 10,
-          ),
+          hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 10),
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Icon(icon, size: 14),
           ),
-          errorStyle: TextStyle(
-            color: Colors.black, // validation error color
-            fontSize: 10,
-          ),
+          errorStyle: const TextStyle(color: Colors.red, fontSize: 10),
           suffixIcon: isPassword
               ? IconButton(
+                  padding:
+                      EdgeInsets.zero, // removes default IconButton padding
+                  constraints:
+                      const BoxConstraints(), // removes minimum size constraint
                   icon: Icon(
-                    isVisible == true ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    isVisible == true
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     size: 14,
+                    color: Color(0xFF9E9E9E),
                   ),
                   onPressed: onToggle,
                 )
               : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
-            borderSide: BorderSide(color: Colors.grey),
+            borderSide: const BorderSide(color: Colors.grey),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
-            borderSide: BorderSide(color: Colors.grey, width: 1),
+            borderSide: const BorderSide(color: Colors.grey, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(
-                color: Color(0xFF7ECBA9),
-                width: 2.5,
-              ),
+            borderSide: const BorderSide(color: Color(0xFF7ECBA9), width: 2.5),
+          ),
+          // add these two — keeps grey border on error, no red border
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: const BorderSide(color: Colors.grey, width: 1),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: const BorderSide(color: Color(0xFF7ECBA9), width: 2.5),
           ),
         ),
       ),
