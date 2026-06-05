@@ -3,14 +3,25 @@ import 'package:fixalert/auth_gate.dart';
 import 'package:fixalert/login.dart';
 import 'package:fixalert/register.dart';
 import 'package:fixalert/reset_password_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fixalert/citizen/citizen_home.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-void main() async {
 
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Suppress mouse tracker Flutter Web bug
+  FlutterError.onError = (FlutterErrorDetails details) {
+    final message = details.exceptionAsString();
+    if (message.contains('_debugDuringDeviceUpdate') ||
+        message.contains('mouse_tracker')) {
+      return;
+    }
+    FlutterError.presentError(details);
+  };
 
   await Supabase.initialize(
     url: "https://udrqnstfeaaifrvypjsu.supabase.co",
@@ -28,12 +39,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     super.initState();
 
-    // ✅ Auth listener goes here
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final event = data.event;
       if (event == AuthChangeEvent.passwordRecovery) {
@@ -46,9 +55,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
+      navigatorKey: navigatorKey,
       home: const AuthGate(),
-
       routes: {
         '/login': (context) => const Login(),
         '/register': (context) => const Register(),

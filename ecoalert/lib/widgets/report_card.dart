@@ -14,8 +14,27 @@ class ReportCard extends StatelessWidget {
     required this.date,
   });
 
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return Colors.green;
+      case 'in_progress':
+        return Colors.blue;
+      case 'resolved':
+        return Colors.teal;
+      case 'rejected':
+        return Colors.red;
+      case 'pending':
+        return Colors.orange;
+      case 'waiting':
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final statusColor = _getStatusColor(status);
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
@@ -48,17 +67,15 @@ class ReportCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: status.toLowerCase() == "verified"
-                      ? Colors.green.shade100
-                      : Colors.orange.shade100,
+                  color: statusColor.withOpacity(
+                    0.12,
+                  ), 
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   status,
                   style: TextStyle(
-                    color: status.toLowerCase() == "verified"
-                        ? Colors.green
-                        : Colors.orange,
+                    color: statusColor,
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                   ),

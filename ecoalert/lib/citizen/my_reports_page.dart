@@ -19,7 +19,17 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
       appBar: AppBar(
         backgroundColor: const Color(0xFF7ECBA9),
-        title: const Text("My Reports"),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.report_problem),
+            SizedBox(width: 10),
+            const Text("My Reports", style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),),
+          ],
+        ),
       ),
 
       body: FutureBuilder(
@@ -171,7 +181,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                         ),
                                       ),
                                     ),
-                                    if (report['status'] == 'pending')
+                                    if (report['status'] == 'waiting')
                                       PopupMenuButton<String>(
                                         onSelected: (value) async {
                                           if (value == 'edit') {

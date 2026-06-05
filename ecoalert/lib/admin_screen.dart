@@ -63,6 +63,7 @@ class AdminState extends State<Admin> {
       if (mounted) setState(() => isLoadingStats = false);
     }
   }
+
   // ─── FETCH ISSUES ────────────────────────────────────
   Future<void> _fetchIssues() async {
     setState(() => isLoadingIssues = true);
@@ -85,10 +86,12 @@ class AdminState extends State<Admin> {
       if (mounted) setState(() => isLoadingIssues = false);
     }
   }
+
   // ─── FILTER ISSUES ────────────────────────────────────
   void _filterIssues(String tab) {
     setState(() {
       selectedTab = tab;
+      _applyFilter();
       if (tab == 'All Issues') {
         filteredIssues = allIssues;
       } else if (tab == 'Pending') {
@@ -380,6 +383,11 @@ class AdminState extends State<Admin> {
         'status': 'pending', // pending until volunteer accepts
       });
 
+      await Supabase.instance.client
+          .from('reports')
+          .update({'status': 'pending'})
+          .eq('id', reportId);
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -431,7 +439,7 @@ class AdminState extends State<Admin> {
       );
     }
   }
-  
+
   // ─── REJECT ISSUE ─────────────────────────────────────
   Future<void> _rejectIssue(String reportId) async {
     try {
@@ -689,14 +697,24 @@ class AdminState extends State<Admin> {
                       const SizedBox(height: 12),
 
                       // Tabs
-                      Row(
-                        children: [
-                          _buildTab("All Issues", selectedTab == 'All Issues'),
-                          const SizedBox(width: 8),
-                          _buildTab("Pending", selectedTab == 'Pending'),
-                          const SizedBox(width: 8),
-                          _buildTab("Resolved", selectedTab == 'Resolved'),
-                        ],
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildTab(
+                              "All Issues",
+                              selectedTab == 'All Issues',
+                            ),
+                            const SizedBox(width: 8),
+                            _buildTab("Waiting", selectedTab == 'Waiting'),
+                            const SizedBox(width: 8),
+                            _buildTab("Approved", selectedTab == 'Approved'),
+                            const SizedBox(width: 8),
+                            _buildTab("Pending", selectedTab == 'Pending'),
+                            const SizedBox(width: 8),
+                            _buildTab("Resolved", selectedTab == 'Resolved'),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 20),
                       // Issue Cards

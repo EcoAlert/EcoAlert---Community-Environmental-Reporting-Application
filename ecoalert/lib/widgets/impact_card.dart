@@ -16,33 +16,31 @@ class ImpactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 28),
-
-            const SizedBox(height: 10),
-
-            Text(
-              value,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-                color: color,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+    
+          const SizedBox(height: 10),
+    
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: color,
             ),
-
-            const SizedBox(height: 4),
-
-            Text(title, style: const TextStyle(fontSize: 13)),
-          ],
-        ),
+          ),
+    
+          const SizedBox(height: 4),
+    
+          Text(title, style: const TextStyle(fontSize: 13)),
+        ],
       ),
     );
   }

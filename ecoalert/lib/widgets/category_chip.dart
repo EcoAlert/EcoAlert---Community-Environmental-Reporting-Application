@@ -14,28 +14,53 @@ class CategoryChip extends StatelessWidget {
     required this.onTap,
   });
 
+  static const Map<String, Color> _categoryColors = {
+    'waste': Color(0xFFFF8A65), // orange
+    'drainage': Color(0xFF64B5F6), // blue
+    'pollution': Color(0xFF9575CD), // purple
+    'electrical': Color(0xFFFFCA28), // amber
+    'complaint': Color(0xFFF06292), // pink
+    'other': Color(0xFF81C784), // green
+  };
+
   @override
   Widget build(BuildContext context) {
+    final color =
+        _categoryColors[label.toLowerCase()] ?? const Color(0xFF7ECBA9);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF7ECBA9) : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(14),
+          color: selected ? color.withOpacity(0.15) : Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected ? color : Colors.grey.shade200,
+            width: 1.5,
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: selected ? Colors.white : Colors.black),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
 
-            const SizedBox(width: 8),
+            const SizedBox(height: 12),
 
             Text(
               label,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                color: selected ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: selected ? color : Colors.black87,
               ),
             ),
           ],

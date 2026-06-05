@@ -42,13 +42,13 @@ class QuickActionCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
 
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(10),
                   onTap: onTap,
 
                   child: Padding(
                     padding: const EdgeInsets.all(14),
 
-                    child: Icon(icon, color: Colors.white, size: 24),
+                    child: Icon(icon, color: Colors.white, size: 22),
                   ),
                 ),
               ),
@@ -62,7 +62,7 @@ class QuickActionCard extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     ),
 

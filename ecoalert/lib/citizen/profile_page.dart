@@ -74,123 +74,126 @@ class _ProfilePageState extends State<ProfilePage> {
 
             final user = snapshot.data as Map<String, dynamic>;
 
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-
-                  Material(
-                    color: Colors.transparent,
-                    shape: const CircleBorder(),
-
-                    child: InkWell(
-                      onTap: uploadAvatar,
-                      customBorder: const CircleBorder(),
-
-                      splashColor: const Color(0xFF7ECBA9),
-                      highlightColor: Colors.transparent,
-
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-
-                        child: CircleAvatar(
-                          radius: 50,
-
-                          backgroundImage: user['avatar_url'] != null
-                              ? NetworkImage(user['avatar_url'])
-                              : null,
-
-                          backgroundColor: const Color(0xFFB8E6D5),
-
-                          child: user['avatar_url'] == null
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 45,
-                                  color: Color(0xFF018F52),
-                                )
-                              : null,
+            return ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+              
+                    Material(
+                      color: Colors.transparent,
+                      shape: const CircleBorder(),
+              
+                      child: InkWell(
+                        onTap: uploadAvatar,
+                        customBorder: const CircleBorder(),
+              
+                        splashColor: const Color(0xFF7ECBA9),
+                        highlightColor: Colors.transparent,
+              
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+              
+                          child: CircleAvatar(
+                            radius: 50,
+              
+                            backgroundImage: user['avatar_url'] != null
+                                ? NetworkImage(user['avatar_url'])
+                                : null,
+              
+                            backgroundColor: const Color(0xFFB8E6D5),
+              
+                            child: user['avatar_url'] == null
+                                ? const Icon(
+                                    Icons.person,
+                                    size: 45,
+                                    color: Color(0xFF018F52),
+                                  )
+                                : null,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  const Text(
-                    "Tap photo to change",
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Text(
-                    user['full_name'] ?? '',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                    const SizedBox(height: 8),
+              
+                    const Text(
+                      "Tap photo to change",
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  Text(
-                    user['role'] ?? '',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  _profileTile(
-                    icon: Icons.badge_outlined,
-                    title: "Member ID",
-                    subtitle: user['member_id'] ?? '',
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  _profileTile(
-                    icon: Icons.email_outlined,
-                    title: "Email",
-                    subtitle: user['email'] ?? '',
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  _profileTile(
-                    icon: Icons.person_outline,
-                    title: "Role",
-                    subtitle: user['role'] ?? '',
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  SizedBox(
-                    width: double.infinity,
-
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF018F52),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-
-                      onPressed: () async {
-                        await AuthService.logout();
-
-                        if (!context.mounted) return;
-
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          '/login',
-                          (route) => false,
-                        );
-                      },
-
-                      child: const Text(
-                        "Logout",
-                        style: TextStyle(color: Colors.white),
+              
+                    const SizedBox(height: 16),
+              
+                    Text(
+                      user['full_name'] ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
                       ),
                     ),
-                  ),
-                ],
+              
+                    const SizedBox(height: 6),
+              
+                    Text(
+                      user['role'] ?? '',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+              
+                    const SizedBox(height: 30),
+              
+                    _profileTile(
+                      icon: Icons.badge_outlined,
+                      title: "Member ID",
+                      subtitle: user['member_id'] ?? '',
+                    ),
+              
+                    const SizedBox(height: 14),
+              
+                    _profileTile(
+                      icon: Icons.email_outlined,
+                      title: "Email",
+                      subtitle: user['email'] ?? '',
+                    ),
+              
+                    const SizedBox(height: 14),
+              
+                    _profileTile(
+                      icon: Icons.person_outline,
+                      title: "Role",
+                      subtitle: user['role'] ?? '',
+                    ),
+              
+                    const SizedBox(height: 30),
+              
+                    SizedBox(
+                      width: double.infinity,
+              
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF018F52),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+              
+                        onPressed: () async {
+                          await AuthService.logout();
+              
+                          if (!context.mounted) return;
+              
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/login',
+                            (route) => false,
+                          );
+                        },
+              
+                        child: const Text(
+                          "Logout",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
