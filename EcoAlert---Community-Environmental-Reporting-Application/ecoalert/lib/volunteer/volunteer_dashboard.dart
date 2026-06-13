@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -395,65 +394,5 @@ class _VolunteerDashboardState extends State<VolunteerDashboard> {
       default:
         return Colors.red;
     }
-  }
-
-  void _showBottomSheet(Map<String, dynamic> t, Map<String, dynamic> report) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(report['title'] ?? ''),
-              const SizedBox(height: 10),
-              Text(report['location'] ?? ''),
-
-              const SizedBox(height: 20),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        updateStatus(t['id'], t['report_id'], 'in_progress');
-                        Navigator.pop(context);
-                      },
-                      child: const Text("In Progress"),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        updateStatus(t['id'], t['report_id'], 'resolved');
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Resolved"),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 10),
-
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF7ECBA9),
-                ),
-                onPressed: () {
-                  uploadVerificationImage(t['id'].toString());
-                },
-                child: const Text("Upload Solved Image"),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 }
