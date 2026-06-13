@@ -1,6 +1,7 @@
 import 'package:fixalert/citizen/report_issue_page.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
 
 class MyReportsPage extends StatefulWidget {
   const MyReportsPage({super.key});
@@ -19,15 +20,16 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
       appBar: AppBar(
         backgroundColor: const Color(0xFF7ECBA9),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        centerTitle: true,
+        title: const Row(
+          mainAxisSize: MainAxisSize.min, // ✅ shrinks row to content width
           children: [
             Icon(Icons.report_problem),
-            SizedBox(width: 10),
-            const Text("My Reports", style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),),
+            SizedBox(width: 8),
+            Text(
+              "My Reports",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
       ),
@@ -125,7 +127,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
                       case 'rejected':
                         statusColor = Colors.red;
                         break;
-
+                      case 'task_completed':
+                        statusColor = Colors.purpleAccent;
+                        break;
                       default:
                         statusColor = Colors.grey;
                     }
@@ -174,7 +178,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        report['category'] ?? "Issue",
+                                        report['title'] ?? "Issue",
                                         style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -320,6 +324,10 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
                                 const SizedBox(height: 10),
 
+                                Text(report['category'] ?? ""),
+
+                                const SizedBox(height: 10),
+
                                 Row(
                                   children: [
                                     const Icon(
@@ -340,11 +348,11 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                 const SizedBox(height: 10),
 
                                 Text(
-                                  report['created_at'].toString().substring(
-                                    0,
-                                    10,
+                                  DateFormat('dd MMM yyyy, hh:mm a').format(
+                                    DateTime.parse(
+                                      report['created_at'],
+                                    ).toLocal(),
                                   ),
-
                                   style: TextStyle(color: Colors.grey.shade600),
                                 ),
                               ],

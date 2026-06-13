@@ -1,10 +1,11 @@
 import 'dart:io';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fixalert/widgets/category_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class ReportIssuePage extends StatefulWidget {
@@ -19,6 +20,7 @@ class ReportIssuePage extends StatefulWidget {
 class _ReportIssuePageState extends State<ReportIssuePage> {
   final supabase = Supabase.instance.client;
 
+  final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final locationController = TextEditingController();
 
@@ -55,6 +57,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
     super.initState();
 
     if (widget.report != null) {
+      titleController.text = widget.report!['title'] ?? '';
       descriptionController.text = widget.report!['description'] ?? '';
       locationController.text = widget.report!['location'] ?? '';
       selectedCategory = widget.report!['category'] ?? '';
@@ -63,6 +66,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
 
   @override
   void dispose() {
+    titleController.dispose();
     descriptionController.dispose(); // dispose controllers
     locationController.dispose();
     super.dispose();
@@ -79,8 +83,8 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
   }
 
   Future<void> getCurrentLocation() async {
+    // 1. Check if location service is on
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
     if (!serviceEnabled) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,11 +93,10 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
       return;
     }
 
+    // 2. Check permission
     LocationPermission permission = await Geolocator.checkPermission();
-
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-
       if (permission == LocationPermission.denied) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -113,15 +116,46 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
       return;
     }
 
+    // 3. Get GPS position
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
 
+    // 4. Set coordinates immediately as fallback text
+    if (!mounted) return;
     setState(() {
       latitude = position.latitude;
       longitude = position.longitude;
       locationController.text = "${position.latitude}, ${position.longitude}";
     });
+
+    // 5. Reverse geocode using Nominatim (web-safe, no API key needed)
+    try {
+      final url = Uri.parse(
+        "https://nominatim.openstreetmap.org/reverse"
+        "?lat=${position.latitude}&lon=${position.longitude}&format=json",
+      );
+
+      final response = await http.get(
+        url,
+        headers: {'Accept': 'application/json', 'User-Agent': 'FixAlert/1.0'},
+      );
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final address = data['display_name'];
+
+        if (address != null && address.toString().isNotEmpty) {
+          setState(() {
+            locationController.text = address;
+          });
+        }
+      }
+    } catch (e) {
+      // Coordinates already set in step 4, so safe to silently ignore
+    }
   }
 
   Future<void> submitReport() async {
@@ -130,6 +164,13 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please select a category.")),
       );
+      return;
+    }
+
+    if (titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please enter a title.")));
       return;
     }
 
@@ -162,7 +203,11 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
 
       if (widget.report == null) {
         await supabase.from('reports').insert({
-          'user_id': supabase.auth.currentUser?.id,
+          'user_id': supabase.auth.currentUser!.id,
+          'organization_id': 'SFD-001',
+          'title': titleController.text.trim(),
+          'reported_by': supabase.auth.currentUser?.id,
+
           'category': selectedCategory,
           'description': descriptionController.text.trim(),
           'location': locationController.text.trim(),
@@ -175,6 +220,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
         await supabase
             .from('reports')
             .update({
+              'title': titleController.text.trim(),
               'category': selectedCategory,
               'description': descriptionController.text.trim(),
               'location': locationController.text.trim(),
@@ -280,6 +326,30 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                                 width: double.infinity,
                               ),
                       ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+            const Text(
+              "Title",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+
+            const SizedBox(height: 12),
+
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                hintText: "Enter issue title",
+                filled: true,
+                fillColor: Colors.white,
+
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+
+                prefixIcon: const Icon(Icons.edit_note),
               ),
             ),
 

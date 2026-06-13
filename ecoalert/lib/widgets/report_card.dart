@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ReportCard extends StatelessWidget {
   final String title;
+  final String description;
   final String location;
   final String status;
   final String date;
@@ -9,6 +10,7 @@ class ReportCard extends StatelessWidget {
   const ReportCard({
     super.key,
     required this.title,
+    required this.description,
     required this.location,
     required this.status,
     required this.date,
@@ -26,6 +28,8 @@ class ReportCard extends StatelessWidget {
         return Colors.red;
       case 'pending':
         return Colors.orange;
+      case 'task_completed':
+        return Colors.purpleAccent;
       case 'waiting':
       default:
         return Colors.grey;
@@ -67,9 +71,7 @@ class ReportCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(
-                    0.12,
-                  ), 
+                  color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -84,15 +86,23 @@ class ReportCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
 
+          Text(
+            description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+
+          const SizedBox(height: 10),
           Row(
             children: [
               const Icon(Icons.location_on_outlined, size: 16),
 
               const SizedBox(width: 4),
 
-              Text(location),
+              Expanded(child: Text(location)),
             ],
           ),
 

@@ -1,5 +1,6 @@
 import 'package:fixalert/citizen/citizen_home.dart';
 import 'package:fixalert/login.dart';
+import 'package:fixalert/volunteer/volunteer_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fixalert/admin_screen.dart';
@@ -52,7 +53,7 @@ class AuthGate extends StatelessWidget {
               if (role == 'admin') {
                 return const Admin();
               } else if (role == 'volunteer') {
-                // return const VolunteerScreen();
+                return const VolunteerDashboard();
               } else if (role == 'citizen') {
                 return const CitizenHome();
               }

@@ -97,7 +97,10 @@ class _CitizenHomeState extends State<CitizenHome> {
                     ),
                     Text(
                       "Community Issue Reporting",
-                      style: TextStyle(color: Color.fromARGB(255, 138, 138, 138), fontSize: 12),
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 138, 138, 138),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -235,7 +238,9 @@ class _CitizenHomeState extends State<CitizenHome> {
                         return Column(
                           children: reports.map((report) {
                             return ReportCard(
-                              title: report['category'] ?? "Issue",
+                              title: report['title'] ?? "Untitled Issue",
+                              description:
+                                  report['description'] ?? "No description",
                               location: report['location'] ?? "Unknown",
                               status: report['status'] ?? "Pending",
                               date: report['created_at'].toString().substring(
@@ -243,7 +248,7 @@ class _CitizenHomeState extends State<CitizenHome> {
                                 10,
                               ),
                             );
-                          }).toList(),
+                          }).toList().cast<Widget>(),
                         );
                       },
                     ),

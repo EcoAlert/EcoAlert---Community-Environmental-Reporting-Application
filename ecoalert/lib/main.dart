@@ -3,10 +3,12 @@ import 'package:fixalert/auth_gate.dart';
 import 'package:fixalert/login.dart';
 import 'package:fixalert/register.dart';
 import 'package:fixalert/reset_password_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fixalert/citizen/citizen_home.dart';
+import 'package:fixalert/Volunteer/volunteer_dashboard.dart';
+import 'package:fixalert/volunteer/volunteer_profile.dart';
+
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -63,6 +65,8 @@ class _MyAppState extends State<MyApp> {
         '/admin': (context) => const Admin(),
         '/citizen': (context) => const CitizenHome(),
         '/reset-password': (context) => const ResetPasswordScreen(),
+        '/volunteer': (context) => const VolunteerDashboard(),
+        '/volunteer_profile': (context) => const VolunteerProfile(),
       },
     );
   }
