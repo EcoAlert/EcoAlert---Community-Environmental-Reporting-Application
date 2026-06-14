@@ -180,7 +180,7 @@ class _VolunteerDashboardState extends State<VolunteerDashboard> {
 
                             return GestureDetector(
                               onTap: () async {
-                                // ✅ Only navigate if status is in_progress or task_completed
+                                // Only navigate if status is in_progress or task_completed
                                 if (status == 'pending') {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(

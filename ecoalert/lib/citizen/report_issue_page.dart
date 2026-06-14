@@ -159,6 +159,23 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
   }
 
   Future<void> submitReport() async {
+    // Limit check — only for NEW reports, not edits
+    if (widget.report == null) {
+      final allowed = await canSubmitReport();
+      if (!allowed) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "You've reached your weekly limit of 3 reports. Please try again after 7 days.",
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
     // Validate fields before submitting
     if (selectedCategory.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -241,6 +258,19 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
         context,
       ).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
     }
+  }
+
+  Future<bool> canSubmitReport() async {
+    final oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
+
+    final result = await supabase
+        .from('reports')
+        .select()
+        .eq('user_id', supabase.auth.currentUser!.id)
+        .gte('created_at', oneWeekAgo.toIso8601String())
+        .count();
+
+    return result.count < 3;
   }
 
   @override

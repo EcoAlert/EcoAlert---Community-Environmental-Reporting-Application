@@ -15,9 +15,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _showPassword = false;
-  String _passwordValue = ''; // 👈 add
+  String _passwordValue = '';
 
-  // 👈 Copy these from register page
   int _getPasswordStrength(String password) {
     int strength = 0;
     if (password.length >= 8) strength++;
@@ -191,7 +190,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       },
                     ),
 
-                    // 👈 Password strength indicator
+                    // Password strength indicator
                     if (_passwordValue.isNotEmpty)
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.72,

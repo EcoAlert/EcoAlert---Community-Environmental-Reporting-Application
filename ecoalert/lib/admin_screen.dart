@@ -24,6 +24,7 @@ class AdminState extends State<Admin> {
   String selectedTab = 'All Issues';
   bool isLoadingIssues = false;
 
+ /*_____________FetchStats_____________*/
   Future<void> _fetchStats() async {
     setState(() => isLoadingStats = true);
     try {
@@ -55,6 +56,7 @@ class AdminState extends State<Admin> {
     }
   }
 
+  /*_____________FetchIssues_____________*/
   Future<void> _fetchIssues() async {
     setState(() => isLoadingIssues = true);
     try {
@@ -76,6 +78,7 @@ class AdminState extends State<Admin> {
     }
   }
 
+  /*_____________ApplyFilter_____________*/
   void _applyFilter() {
     if (selectedTab == 'All Issues') {
       filteredIssues = allIssues;
@@ -97,6 +100,7 @@ class AdminState extends State<Admin> {
     }
   }
 
+  /*_____________FilterIssues_____________*/
   void _filterIssues(String tab) {
     setState(() {
       selectedTab = tab;
@@ -104,6 +108,7 @@ class AdminState extends State<Admin> {
     });
   }
 
+  /*_____________FetchVolunteers_____________*/
   Future<void> _fetchVolunteers() async {
     try {
       final response = await Supabase.instance.client
@@ -134,6 +139,7 @@ class AdminState extends State<Admin> {
     }
   }
 
+  /*_____________AssignVolunteers_____________*/
   void _assignVolunteer(String reportId) async {
     await _fetchVolunteers();
     if (!mounted) return;
@@ -298,6 +304,7 @@ class AdminState extends State<Admin> {
     );
   }
 
+  /*_____________ConfirmAssign_____________*/
   Future<void> _confirmAssign(String reportId, String volunteerId) async {
     try {
       final currentUser = Supabase.instance.client.auth.currentUser;
@@ -368,6 +375,7 @@ class AdminState extends State<Admin> {
     }
   }
 
+  /*_____________ShowReassignSheet_____________*/
   void _showReassignSheet(String reportId) async {
     await _fetchVolunteers();
     if (!mounted) return;
@@ -635,6 +643,7 @@ class AdminState extends State<Admin> {
     );
   }
 
+  /*_____________ShowImagePlacholder when image_url is null_____________*/
   Widget _noImagePlaceholder() {
     return Container(
       height: 160,
@@ -647,7 +656,7 @@ class AdminState extends State<Admin> {
           child: Icon(Icons.image_not_supported, color: Colors.grey, size: 40)),
     );
   }
-
+  /*_____________Mark as Resolved_____________*/
   Future<void> _markResolved(String reportId) async {
     try {
       await Supabase.instance.client
@@ -672,6 +681,7 @@ class AdminState extends State<Admin> {
     }
   }
 
+  /*_____________ApproveIssue_____________*/
   Future<void> _approveIssue(String reportId) async {
     try {
       await Supabase.instance.client
@@ -690,7 +700,7 @@ class AdminState extends State<Admin> {
           backgroundColor: Colors.red));
     }
   }
-
+  /*_____________RejectIssue_____________*/
   Future<void> _rejectIssue(String reportId) async {
     try {
       await Supabase.instance.client
@@ -883,7 +893,7 @@ class AdminState extends State<Admin> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Filter Tabs — added "Completed"
+                      // Filter Tabs
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(

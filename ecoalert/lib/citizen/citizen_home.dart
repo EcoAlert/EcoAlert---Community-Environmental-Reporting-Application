@@ -220,7 +220,7 @@ class _CitizenHomeState extends State<CitizenHome> {
                           .select()
                           .eq('user_id', supabase.auth.currentUser!.id)
                           .order('created_at', ascending: false)
-                          .limit(5),
+                          .limit(3),
 
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {

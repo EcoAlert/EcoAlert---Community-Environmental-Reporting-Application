@@ -39,45 +39,40 @@ class _VolunteerTaskDetailsState extends State<VolunteerTaskDetails> {
 
   Future<void> uploadVerificationImage(BuildContext context) async {
     try {
-      // 1. Get volunteer's current location
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
+      // 1. Get report's saved coordinates (if any)
+      final double? reportLat = (taskData['reports']['lat'] as num?)
+          ?.toDouble();
+      final double? reportLng = (taskData['reports']['lng'] as num?)
+          ?.toDouble();
 
-      // 2. Get report's saved coordinates
-      // Change these two lines
-      final double? reportLat = taskData['reports']['latitude']?.toDouble();
-      final double? reportLng = taskData['reports']['longitude']?.toDouble();
-
-      if (reportLat == null || reportLng == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Report location not available.")),
+      // 2. Only run GPS check if the report has coordinates (skip for manual/indoor addresses)
+      if (reportLat != null && reportLng != null) {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
         );
-        return;
-      }
 
-      // 3. Calculate distance in meters
-      final double distance = Geolocator.distanceBetween(
-        reportLat,
-        reportLng,
-        position.latitude,
-        position.longitude,
-      );
+        final double distance = Geolocator.distanceBetween(
+          reportLat,
+          reportLng,
+          position.latitude,
+          position.longitude,
+        );
 
-      // 4. Block if more than 100 meters away
-      if (distance > 100) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "You are ${distance.toStringAsFixed(0)}m away from the report site. Please go to the location first.",
+        if (distance > 100) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "You are ${distance.toStringAsFixed(0)}m away from the report site. Please go to the location first.",
+              ),
+              backgroundColor: Colors.red,
             ),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
+          );
+          return;
+        }
       }
 
-      // 5. Force camera instead of gallery
+      // 3. Force camera for both GPS and manual/indoor reports
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
         source: ImageSource.camera,
@@ -111,7 +106,10 @@ class _VolunteerTaskDetailsState extends State<VolunteerTaskDetails> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Verification image uploaded ✅")),
+        const SnackBar(
+          content: Text("Verification image uploaded ✅"),
+          backgroundColor: Colors.green,
+        ),
       );
     } catch (e) {
       if (!mounted) return;

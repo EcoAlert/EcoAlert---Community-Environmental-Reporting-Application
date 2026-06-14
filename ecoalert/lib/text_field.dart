@@ -89,7 +89,6 @@ class InputField extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
             borderSide: const BorderSide(color: Color(0xFF7ECBA9), width: 2.5),
           ),
-          // add these two — keeps grey border on error, no red border
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
             borderSide: const BorderSide(color: Colors.grey, width: 1),
