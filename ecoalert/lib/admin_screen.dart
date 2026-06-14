@@ -760,7 +760,7 @@ class AdminState extends State<Admin> {
                       ),
                       child: const FaIcon(
                           FontAwesomeIcons.screwdriverWrench,
-                          color: Color.fromARGB(255, 1, 143, 82),
+                          color: Color(0xFF018F52),
                           size: 17),
                     ),
                     const SizedBox(width: 8),
