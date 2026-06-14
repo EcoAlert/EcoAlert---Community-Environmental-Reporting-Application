@@ -1204,9 +1204,13 @@ class AdminState extends State<Admin> {
             const Icon(Icons.location_on_outlined,
                 size: 13, color: Colors.grey),
             const SizedBox(width: 4),
-            Text(issue['location'] ?? '',
-                style:
-                    const TextStyle(fontSize: 12, color: Colors.grey)),
+            Expanded(
+              child: Text(issue['location'] ?? '',
+                  style:
+                      const TextStyle(fontSize: 12, color: Colors.grey)),
+            ),
+                    
+                    
           ]),
           const SizedBox(height: 4),
 
