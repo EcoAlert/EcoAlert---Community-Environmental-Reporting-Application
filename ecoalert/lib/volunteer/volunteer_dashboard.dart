@@ -110,9 +110,9 @@ class _VolunteerDashboardState extends State<VolunteerDashboard> {
                           ),
                           const SizedBox(width: 10),
                           _topCard(
-                            "Waiting",
+                            "Pending",
                             tasks
-                                .where((t) => t['status'] == 'waiting')
+                                .where((t) => t['status'] == 'pending')
                                 .length
                                 .toString(),
                             Icons.hourglass_empty,

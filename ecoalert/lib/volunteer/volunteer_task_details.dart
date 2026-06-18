@@ -39,17 +39,67 @@ class _VolunteerTaskDetailsState extends State<VolunteerTaskDetails> {
 
   Future<void> uploadVerificationImage(BuildContext context) async {
     try {
-      // 1. Get report's saved coordinates (if any)
-      final double? reportLat = (taskData['reports']['lat'] as num?)
-          ?.toDouble();
-      final double? reportLng = (taskData['reports']['lng'] as num?)
+      final double? reportLat = (taskData['reports']['latitude'] as num?)
           ?.toDouble();
 
-      // 2. Only run GPS check if the report has coordinates (skip for manual/indoor addresses)
+      final double? reportLng = (taskData['reports']['longitude'] as num?)
+          ?.toDouble();
+      debugPrint("REPORT LAT: $reportLat");
+      debugPrint("REPORT LNG: $reportLng");
+      debugPrint("REPORT DATA: ${taskData['reports']}");
+
       if (reportLat != null && reportLng != null) {
+        // 👈 Step 1: Check if location service is enabled
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Location services are disabled. Please enable GPS.',
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        // 👈 Step 2: Check permission
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location permission denied.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location permission permanently denied.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        // 👈 Step 3: Get current position with high accuracy
         final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.bestForNavigation, // 👈 highest accuracy
+            distanceFilter: 0,
+          ),
         );
+        debugPrint("CURRENT LAT: ${position.latitude}");
+        debugPrint("CURRENT LNG: ${position.longitude}");
 
         final double distance = Geolocator.distanceBetween(
           reportLat,
@@ -58,7 +108,9 @@ class _VolunteerTaskDetailsState extends State<VolunteerTaskDetails> {
           position.longitude,
         );
 
-        if (distance > 100) {
+        debugPrint("DISTANCE: $distance");
+
+        if (distance > 10) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -247,14 +299,14 @@ class _VolunteerTaskDetailsState extends State<VolunteerTaskDetails> {
 
             const SizedBox(height: 10),
 
-            // Upload Solved Image button
+            // Take Photo Of Solved Issue button
             if (!isCompleted) ...[
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.upload),
-                  label: const Text("Upload Solved Image"),
+                  label: const Text("Take Photo Of Solved Issue"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF7ECBA9),
                     foregroundColor: Colors.white,

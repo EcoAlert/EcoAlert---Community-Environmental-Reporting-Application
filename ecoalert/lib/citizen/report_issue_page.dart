@@ -73,12 +73,17 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
   }
 
   Future<void> pickImage() async {
-    final picked = await picker.pickImage(source: ImageSource.gallery);
+    final picked = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 70,
+    );
 
     if (picked != null) {
       setState(() {
         selectedImage = picked;
       });
+
+      await getCurrentLocation();
     }
   }
 
@@ -339,7 +344,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                             color: Colors.grey,
                           ),
                           SizedBox(height: 10),
-                          Text("Click to upload image"),
+                          Text("Take Photo"),
                         ],
                       )
                     : ClipRRect(
@@ -426,44 +431,21 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
 
             const SizedBox(height: 12),
 
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: locationController,
-
-                    decoration: InputDecoration(
-                      hintText: "Enter location",
-                      filled: true,
-                      fillColor: Colors.white,
-
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-
-                      prefixIcon: const Icon(Icons.location_on_outlined),
-                    ),
-                  ),
+            TextField(
+              controller: locationController,
+              readOnly: true,
+              decoration: InputDecoration(
+                hintText: "Location will be captured automatically",
+                filled: true,
+                fillColor: Colors.white,
+                        
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
                 ),
-
-                const SizedBox(width: 10),
-
-                GestureDetector(
-                  onTap: getCurrentLocation,
-
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF7ECBA9),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-
-                    child: const Icon(Icons.my_location, color: Colors.white),
-                  ),
-                ),
-              ],
+                        
+                prefixIcon: const Icon(Icons.location_on_outlined),
+              ),
             ),
 
             const SizedBox(height: 24), // ✅ missing SizedBox added
