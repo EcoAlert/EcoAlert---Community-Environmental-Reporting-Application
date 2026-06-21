@@ -433,7 +433,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
 
             TextField(
               controller: locationController,
-              readOnly: true,
+              readOnly: false,
               decoration: InputDecoration(
                 hintText: "Location will be captured automatically",
                 filled: true,
