@@ -71,7 +71,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
     locationController.dispose();
     super.dispose();
   }
-
+//pick image and get location
   Future<void> pickImage() async {
     final picked = await picker.pickImage(
       source: ImageSource.camera,

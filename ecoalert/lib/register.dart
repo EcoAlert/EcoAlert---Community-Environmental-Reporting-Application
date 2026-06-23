@@ -29,7 +29,7 @@ class _RegisterState extends State<Register> {
   int _getPasswordStrength(String password) {
     int strength = 0;
     if (password.length >= 8) strength++;
-    if (RegExp(r'[A-Z]').hasMatch(password)) strength++;
+    if (RegExp(r'[A-Z]').hasMatch(password) && RegExp(r'[a-z]').hasMatch(password)) strength++;
     if (RegExp(r'[0-9]').hasMatch(password)) strength++;
     if (RegExp(r'[@$_!]').hasMatch(password)) strength++;
     return strength; // 0 to 4

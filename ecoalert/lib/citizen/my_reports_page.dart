@@ -22,7 +22,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
         backgroundColor: const Color(0xFF7ECBA9),
         centerTitle: true,
         title: const Row(
-          mainAxisSize: MainAxisSize.min, // ✅ shrinks row to content width
+          mainAxisSize: MainAxisSize.min, //  shrinks row to content width
           children: [
             Icon(Icons.report_problem),
             SizedBox(width: 8),
@@ -93,10 +93,10 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
                     final createdAt = DateTime.parse(
                       report['created_at'],
-                    ).add(const Duration(hours: 6));
+                    );
 
                     final canEdit =
-                        DateTime.now().difference(createdAt).inMinutes < 30;
+                        DateTime.now().difference(createdAt).inHours < 6;
 
                     print('NOW = ${DateTime.now()}');
                     print('CREATED = $createdAt');
