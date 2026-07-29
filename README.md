@@ -8,7 +8,7 @@ A community environmental issue-reporting platform built with Flutter and Supaba
 
 ## 🖼️ Screenshots
 
-All app screenshots are available here: [View Screenshots](https://github.com/Nijhumtara/Unibridge_Mobile_Application_Using_Flutter/tree/main/Study_Abroad_Application/unibridge/Asset/View_App)
+All app screenshots are available here: [View Screenshots](https://github.com/EcoAlert/EcoAlert---Community-Environmental-Reporting-Application/tree/main/View_App)
 
 ## ✨ Key Features
 
